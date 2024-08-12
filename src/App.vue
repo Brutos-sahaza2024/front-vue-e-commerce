@@ -8,6 +8,7 @@
 <script>
 import NavbarWeb from './components/Navbar/NavbarWeb.vue';
 
+
 export default {
   name: 'App',
   components: {
@@ -15,6 +16,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .router-view {
   padding-top: 56px;
