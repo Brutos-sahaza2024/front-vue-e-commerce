@@ -1,13 +1,10 @@
 <template>
-  <div>Hello world</div>
+    <div></div>
 </template>
-
 <script>
 export default {
-  
+  name: 'MyFAQ',
 }
 </script>
-
-<style scoped>
-
+<style>
 </style>
