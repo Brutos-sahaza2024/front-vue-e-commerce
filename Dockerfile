@@ -1,19 +1,23 @@
-FROM node:20.14.0
+# Utiliser l'image Node.js comme base
+FROM node:18-alpine
 
-# Définir le répertoire de travail à l'intérieur du conteneur
+# Définir le répertoire de travail dans le conteneur
 WORKDIR /app
 
-# Copier les fichiers package.json et package-lock.json pour installer les dépendances
+# Copier les fichiers package.json et package-lock.json
 COPY package*.json ./
 
-# Installer les dépendances du projet
+# Installer les dépendances
 RUN npm install
 
-# Copier tous les fichiers du projet dans le conteneur
+# Copier le reste des fichiers du projet
 COPY . .
 
-# Exposer le port 8082 (par défaut pour une application Vue.js)
-EXPOSE 8082
+# Compiler l'application Vue.js
+RUN npm run build
 
-# Démarrer l'application Vue.js
+# Exposer le port sur lequel l'application va tourner
+EXPOSE 8080
+
+# Démarrer l'application
 CMD ["npm", "run", "serve"]
