@@ -16,7 +16,7 @@
           </p>
         </div>
         <div class="card-footer d-flex justify-content-around">
-          <router-link to="#" class="btn btn-primary">
+          <router-link :to="{ name: 'productDetail', params: { id: product.id } }" class="btn btn-primary">
             <i class="fas fa-search"></i> Détails
           </router-link>
           <button @click="addToCart" class="btn btn-info">
@@ -29,12 +29,12 @@
   
   <script>
   export default {
+    name: 'ProductCard',
     props: {
       product: Object
     },
     methods: {
       addToCart() {
-        // Logique pour ajouter au panier
         console.log('Ajouter au panier:', this.product.id)
       }
     }

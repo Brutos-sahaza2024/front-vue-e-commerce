@@ -1,6 +1,6 @@
 <template>
     <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
-      <navbar-brand :logo="logo" />
+      <navbar-brand/>
       <navbar-toggler />
       <div class="collapse navbar-collapse" id="navbarNav">
         <navbar-items />
@@ -23,11 +23,5 @@
       NavbarItems,
       SearchForm
     },
-    props: {
-      logo: {
-        type: String,
-        required: true
-      }
-    }
   }
   </script>

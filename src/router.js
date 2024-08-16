@@ -1,5 +1,5 @@
 /* eslint-disable vue/multi-word-component-names */
-import { createMemoryHistory, createRouter } from 'vue-router';
+import { createWebHistory, createRouter } from 'vue-router';
 import Home from '@/views/Home.vue';
 import ProductsByCategory from '@/views/ProductsByCategory.vue';
 import Cart from '@/views/Cart.vue';
@@ -9,6 +9,7 @@ import Contact from '@/views/Contact.vue';
 import Search from '@/views/Search.vue';
 import Login from '@/views/Login.vue';
 import Register from '@/views/Register.vue';
+import ProductDetail from './components/Product/ProductDetail.vue';
 
 const routes = [
   {
@@ -45,7 +46,8 @@ const routes = [
   {
     path: '/search',
     name: 'search',
-    component: Search
+    component: Search,
+    props: (route) => ({ query: route.query.q })
   },
   {
     path: '/login',
@@ -56,11 +58,20 @@ const routes = [
     path: '/register',
     name: 'app_register',
     component: Register
-  }
+  },
+  {
+    path: '/product/:id',
+    name: 'productDetail',
+    component: ProductDetail
+  },
+  {
+    path: '/:pathMatch(.*)*', 
+    name: 'NotFound',
+    component: Home, }
 ];
 
 const router = createRouter({
-  history: createMemoryHistory(),
+  history: createWebHistory(),
   routes
 });
 

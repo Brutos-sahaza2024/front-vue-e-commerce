@@ -11,7 +11,7 @@
 <script>
 import ProductSection from '@/components/Product/ProductSection.vue'
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import api from '@/utils/api'
 
 export default {
   name: "MyHome",
@@ -24,16 +24,15 @@ export default {
     const promotions = ref([])
     const error = ref(null)
 
-    const API_URL = 'http://127.0.0.1:8081/api/product/'
 
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(API_URL)
+        const response = await api.get('/api/product');
         const products = response.data
 
-        featuredProducts.value = products.filter(p => p.featured)
-        newArrivals.value = products.filter(p => p.newArrival)
-        promotions.value = products.filter(p => p.onPromotion)
+        featuredProducts.value = products.filter(p => p.isFeatured)
+        newArrivals.value = products.filter(p => p.isNewArrival)
+        promotions.value = products.filter(p => p.isOnPromotion)
       } catch (err) {
         console.error('Erreur lors de la récupération des produits:', err)
         error.value = 'Erreur lors de la récupération des produits. Veuillez réessayer plus tard.'

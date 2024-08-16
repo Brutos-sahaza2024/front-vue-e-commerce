@@ -7,11 +7,5 @@
   <script>
   export default {
     name: 'NavbarBrand',
-    props: {
-      logo: {
-        type: String,
-        required: true
-      }
-    }
   }
   </script>
