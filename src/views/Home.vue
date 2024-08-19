@@ -9,9 +9,10 @@
 </template>
 
 <script>
+// ProductSection.vue
 import ProductSection from '@/components/Product/ProductSection.vue'
 import { ref, onMounted } from 'vue'
-import api from '@/utils/api'
+import api from "@/utils/api";
 
 export default {
   name: "MyHome",
@@ -24,12 +25,10 @@ export default {
     const promotions = ref([])
     const error = ref(null)
 
-
     const fetchProducts = async () => {
       try {
-        const response = await api.get('/api/product');
+        const response = await api.get('/api/product/')
         const products = response.data
-
         featuredProducts.value = products.filter(p => p.isFeatured)
         newArrivals.value = products.filter(p => p.isNewArrival)
         promotions.value = products.filter(p => p.isOnPromotion)

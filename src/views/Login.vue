@@ -1,15 +1,43 @@
 <template>
-  <div>
-    <form @submit.prevent="login">
-      <input v-model="email" type="email" placeholder="Email" />
-      <input v-model="password" type="password" placeholder="Password" />
-      <button type="submit">Login</button>
+  <div class="container mt-5">
+    <form @submit.prevent="login" class="w-50 mx-auto">
+      <div class="mb-3">
+        <label for="email" class="form-label">Adresse Email</label>
+        <input 
+          v-model="email" 
+          type="email" 
+          id="email" 
+          class="form-control" 
+          placeholder="Entrez votre email"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Mot de passe</label>
+        <input 
+          v-model="password" 
+          type="password" 
+          id="password" 
+          class="form-control" 
+          placeholder="Entrez votre mot de passe"
+        />
+      </div>
+      <div class="form-check mb-3">
+        <input 
+          type="checkbox" 
+          id="rememberMe" 
+          v-model="rememberMe" 
+          class="form-check-input" 
+        />
+        <label for="rememberMe" class="form-check-label">Se souvenir de moi</label>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Connexion</button>
     </form>
   </div>
 </template>
 
+
 <script>
-import axios from 'axios';
+import api from '@/utils/api'
 
 export default {
   name: "MyLogin",
@@ -22,7 +50,7 @@ export default {
   methods: {
     async login() {
       try {
-        const response = await axios.post('http://127.0.0.1:8081/api/login', {
+        const response = await api.post('/api/login_check', {
           email: this.email,
           password: this.password
         });
@@ -30,7 +58,7 @@ export default {
         localStorage.setItem('token', token);
         this.$router.push('/');
       } catch (error) {
-        console.error('Login failed', error);
+        console.error('Login failed', error.response ? error.response.data : error.message);
       }
     }
   }

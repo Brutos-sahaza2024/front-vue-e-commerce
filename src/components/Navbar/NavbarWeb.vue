@@ -5,6 +5,7 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <navbar-items />
         <search-form />
+        <auth-buttons />
       </div>
     </nav>
   </template>
@@ -14,6 +15,7 @@
   import NavbarToggler from './NavbarToggler.vue';
   import NavbarItems from './NavbarItems.vue';
   import SearchForm from './SearchForm.vue';
+  import AuthButtons from "./AuthButtons.vue";
   
   export default {
     name: 'NavbarWeb',
@@ -21,7 +23,8 @@
       NavbarBrand,
       NavbarToggler,
       NavbarItems,
-      SearchForm
+      SearchForm,
+      AuthButtons
     },
   }
   </script>
