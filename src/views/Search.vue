@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import api from "@/utils/api";
 import ProductList from '../components/Product/Search/ProductList.vue';
 
 export default {
@@ -33,7 +33,7 @@ export default {
   methods: {
     async searchProducts(query) {
       try {
-        const response = await axios.get(`http://127.0.0.1:8081/api/product/search?query=${query}`);
+        const response = await api.get(`/api/product/search?query=${query}`);
         this.results = response.data;
       } catch (error) {
         console.error('Erreur lors de la recherche des produits:', error);
