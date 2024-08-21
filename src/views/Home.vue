@@ -51,5 +51,4 @@ export default {
 </script>
 
 <style scoped>
-/* Ajoutez des styles spécifiques à ce composant si nécessaire */
 </style>

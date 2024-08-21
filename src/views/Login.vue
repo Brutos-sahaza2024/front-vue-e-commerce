@@ -1,6 +1,6 @@
 <template>
   <div class="container mt-5">
-    <form @submit.prevent="login" class="w-50 mx-auto">
+    <form @submit.prevent="handleLogin" class="w-50 mx-auto">
       <div class="mb-3">
         <label for="email" class="form-label">Adresse Email</label>
         <input 
@@ -9,6 +9,7 @@
           id="email" 
           class="form-control" 
           placeholder="Entrez votre email"
+          required
         />
       </div>
       <div class="mb-3">
@@ -19,6 +20,7 @@
           id="password" 
           class="form-control" 
           placeholder="Entrez votre mot de passe"
+          required
         />
       </div>
       <div class="form-check mb-3">
@@ -31,36 +33,28 @@
         <label for="rememberMe" class="form-check-label">Se souvenir de moi</label>
       </div>
       <button type="submit" class="btn btn-primary w-100">Connexion</button>
+      <p v-if="errorMessage" class="text-danger mt-3">{{ errorMessage }}</p>
     </form>
   </div>
 </template>
 
-
 <script>
-import api from '@/utils/api'
+import { mapActions } from 'vuex';
 
 export default {
   name: "MyLogin",
   data() {
     return {
       email: '',
-      password: ''
+      password: '',
+      rememberMe: false,
     };
   },
   methods: {
-    async login() {
-      try {
-        const response = await api.post('/api/login_check', {
-          email: this.email,
-          password: this.password
-        });
-        const token = response.data.token;
-        localStorage.setItem('token', token);
-        this.$router.push('/');
-      } catch (error) {
-        console.error('Login failed', error.response ? error.response.data : error.message);
-      }
-    }
-  }
+    ...mapActions(['login']),
+    handleLogin() {
+      this.login({ email: this.email, password: this.password });
+    },
+  },
 };
 </script>

@@ -18,7 +18,7 @@
   </template>
   
   <script>
-  import axios from 'axios';
+import api from "@/utils/api";
   
   export default {
     name: 'ProductDetail',
@@ -33,7 +33,7 @@
     methods: {
       async fetchProductDetails() {
         try {
-          const response = await axios.get(`http://127.0.0.1:8081/api/product/${this.$route.params.id}`);
+          const response = await api.get(`/api/product/${this.$route.params.id}`);
           this.product = response.data;
         } catch (error) {
           console.error('Erreur lors de la récupération des détails du produit:', error);
