@@ -8,11 +8,11 @@ const instance = axios.create({
   },
 });
 
-// Intercepteur pour ajouter le token JWT aux requêtes
+
 instance.interceptors.request.use(
   config => {
     const token = store.state.token;
-    if (token) {
+    if (token && !config.url.includes('/api/token/refresh')) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
     return config;
@@ -22,13 +22,13 @@ instance.interceptors.request.use(
   }
 );
 
-
 instance.interceptors.response.use(
   response => {
     return response;
   },
   async error => {
     const originalRequest = error.config;
+    console.log(error);
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
