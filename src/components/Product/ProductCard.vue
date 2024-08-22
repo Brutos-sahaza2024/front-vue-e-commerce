@@ -19,8 +19,8 @@
           <router-link :to="{ name: 'productDetail', params: { id: product.id } }" class="btn btn-primary">
             <i class="fas fa-search"></i> Détails
           </router-link>
-          <button @click="addToCart" class="btn btn-info">
-            <i class="fas fa-shopping-cart"></i> Panier
+          <button @click="addToCart"  :class="buttonClass">
+            <i :class="iconClass"></i> Panier
           </button>
         </div>
       </div>
@@ -33,10 +33,38 @@
     props: {
       product: Object
     },
+    data(){
+      return {
+        buttonClass: 'btn btn-info',
+        iconClass: 'fas fa-shopping-cart'
+      }
+    },
     methods: {
       addToCart() {
-        console.log('Ajouter au panier:', this.product.id)
+      this.buttonClass = 'btn btn-success';
+      this.iconClass = 'fas fa-check';
+
+      setTimeout(() => {
+        this.buttonClass = 'btn btn-info';
+        this.iconClass = 'fas fa-shopping-cart';
+      }, 500);
+
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      let existingProduct = cart.find(item => item.id === this.product.id);
+
+      if (existingProduct) {
+        existingProduct.quantity += 1;
+      } else {
+        cart.push({
+          id: this.product.id,
+          name: this.product.name,
+          price: this.product.price,
+          quantity: 1
+        });
       }
+
+      localStorage.setItem('cart', JSON.stringify(cart));
     }
+  }
   }
   </script>
