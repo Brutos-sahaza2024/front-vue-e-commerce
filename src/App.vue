@@ -1,8 +1,8 @@
 <template>
   <div id="app">
     <component :is="layout">
-      <router-view class="router-view"></router-view>
-  </component>
+      <router-view ></router-view>
+    </component>
   </div>
 </template>
 
@@ -20,7 +20,5 @@ export default {
 </script>
 
 <style scoped>
-.router-view {
-  padding-top: 56px;
-}
+
 </style>

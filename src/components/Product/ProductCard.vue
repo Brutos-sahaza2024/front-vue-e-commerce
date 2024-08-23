@@ -47,10 +47,11 @@
       setTimeout(() => {
         this.buttonClass = 'btn btn-info';
         this.iconClass = 'fas fa-shopping-cart';
-      }, 500);
+      }, 250);
 
       let cart = JSON.parse(localStorage.getItem('cart')) || [];
-      let existingProduct = cart.find(item => item.id === this.product.id);
+      console.log(cart);
+      let existingProduct = cart.find(item => item.id == this.product.id);
 
       if (existingProduct) {
         existingProduct.quantity += 1;
