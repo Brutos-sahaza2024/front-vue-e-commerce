@@ -1,5 +1,5 @@
 <template>
-    <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light" v-once>
       <navbar-brand/>
       <navbar-toggler />
       <div class="collapse navbar-collapse" id="navbarNav">

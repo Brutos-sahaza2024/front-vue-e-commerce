@@ -6,6 +6,7 @@ const store = createStore({
   state: {
     token: localStorage.getItem('token') || '',
     refreshToken: localStorage.getItem('refresh_token') || '',
+    userInfo: JSON.parse(localStorage.getItem('userInfo')) || {},
   },
   mutations: {
     setToken(state, token) {
@@ -16,6 +17,10 @@ const store = createStore({
       state.refreshToken = refreshToken;
       localStorage.setItem('refresh_token', refreshToken);
     },
+    setUserInfo(state, userInfo) {
+      state.userInfo = userInfo;
+      localStorage.setItem('userInfo', JSON.stringify(userInfo))
+    }
   },
   actions: {
     async login({ commit }, credentials) {
@@ -23,6 +28,11 @@ const store = createStore({
         const response = await api.post('/api/login_check', credentials);
         commit('setToken', response.data.token);
         commit('setRefreshToken', response.data.refresh_token);
+        const userInfo = {
+          user: response.data.user,
+        };
+        commit('setUserInfo', userInfo);
+
         router.push('/');
       } catch (error) {
         console.error('Login error:', error);

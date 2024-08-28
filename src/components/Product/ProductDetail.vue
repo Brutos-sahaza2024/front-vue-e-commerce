@@ -1,95 +1,189 @@
 <template>
-    <div v-if="product" class="product-detail">
-      <img :src="product.imageUrl" :alt="product.name" class="product-image" />
-      <div class="product-info">
-        <h2 class="product-name">{{ product.name }}</h2>
-        <p class="product-description">{{ product.description }}</p>
-        <p class="product-price">{{ product.price }} €</p>
-        <p class="product-stock">En stock: {{ product.stockQuantity }}</p>
-        <p class="product-rating">Note: {{ product.rating }}/5 ({{ product.numberOfReviews }} avis)</p>
-        <p class="product-discount" v-if="product.discount">Réduction: {{ product.discount }} €</p>
-        <p class="product-active">Actif: {{ product.active ? 'Oui' : 'Non' }}</p>
-        <p class="product-promotion" v-if="product.onPromotion">En promotion</p>
+  <div class="container mt-5">
+    <div v-if="product" class="card mb-4">
+      <img :src="product.imageUrl" :alt="product.name" class="card-img-top" />
+      <div class="card-body">
+        <h2 class="card-title">{{ product.name }}</h2>
+        <p class="card-text">{{ product.description }}</p>
+        <p class="card-text"><strong>Prix:</strong> {{ product.price }} €</p>
+        <p class="card-text"><strong>En stock:</strong> {{ product.stockQuantity }}</p>
+        <p class="card-text" v-if="product.discount"><strong>Réduction:</strong> {{ product.discount }} €</p>
+        <p class="card-text"><strong>Actif:</strong> {{ product.isActive ? 'Oui' : 'Non' }}</p>
+        <p class="card-text" v-if="product.isOnPromotion"><strong>En promotion</strong></p>
+        <p class="card-text"><i class="fas fa-folder"></i> <strong>Catégorie:</strong> {{ product.category.name }}</p>
+        <p class="card-text"><i class="fas fa-star"></i> <strong>Note moyenne:</strong> {{ averageRating }}</p>
+        <p class="card-text"><i class="fas fa-comments"></i> <strong>Nombre d'avis:</strong> {{ product.ratings.length }}</p>
       </div>
     </div>
-    <div v-else>
-      <p>Chargement des détails du produit...</p>
+    <div v-else class="alert alert-info" role="alert">
+      Chargement des détails du produit...
     </div>
-  </template>
-  
-  <script>
+    <product-add-rating @submit="handleRatingSubmit" />
+    <product-comment @submit="handleCommentSubmit" />
+    <div v-if="hasComments">
+    <h2 class="mt-4">Commentaires</h2>
+    <div class="row">
+      <div class="col-12 mb-4" v-for="comment in comments" :key="comment.id">
+        <div class="card h-100 shadow">
+          <div class="card-body d-flex flex-column">
+            <div>
+              <h5 class="card-title">{{ comment.user.username }}</h5>
+              <h6 class="card-subtitle mb-2 text-muted">{{ formatDate(comment.createdAt) }}</h6>
+            </div>
+            <form v-if="comment.editing" @submit.prevent="updateComment(comment)">
+              <textarea v-model="comment.content" class="form-control mb-2"></textarea>
+              <button type="submit" class="btn btn-primary">Enregistrer</button>
+            </form>
+            <p class="card-text flex-grow-1" v-if="!comment.editing">{{ comment.content }}</p>
+            <div class="mt-auto">
+              <button v-if="isCurrentUser(comment.user.username)" @click="toggleEdit(comment)" class="btn btn-sm btn-secondary">
+                {{ comment.editing ? 'Annuler' : 'Éditer' }}
+              </button>
+              <button v-if="isCurrentUser(comment.user.username)" @click="deleteComment(comment.id)" class="btn btn-sm btn-danger">
+              Supprimer
+            </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</template>
+
+<script>
 import api from "@/utils/api";
-  
-  export default {
-    name: 'ProductDetail',
-    data() {
-      return {
-        product: null
-      }
-    },
-    created() {
-      this.fetchProductDetails();
-    },
-    methods: {
-      async fetchProductDetails() {
-        try {
-          const response = await api.get(`/api/product/${this.$route.params.id}`);
-          this.product = response.data;
-        } catch (error) {
-          console.error('Erreur lors de la récupération des détails du produit:', error);
-        }
-      }
+import ProductAddRating from "./ProductAddRating.vue";
+import ProductComment from "./ProductComment.vue";
+import { mapState } from 'vuex';
+
+export default {
+  name: 'ProductDetail',
+  components: {
+    ProductAddRating,
+    ProductComment
+  },
+  data() {
+    return {
+      product: null
     }
+  },
+  computed: {
+    avis() {
+      return this.product?.ratings?.length || 0;
+    },
+    comments() {
+      return this.product?.comments || [];
+    },
+    hasComments() {
+      return this.comments.length > 0;
+    },
+    averageRating() {
+    const sum = this.product.ratings.reduce((acc, rating) => acc + parseFloat(rating.value), 0);
+    const average = sum / this.product.ratings.length;
+    return parseFloat(average.toFixed(2))
+  },
+    ...mapState(['userInfo'])
+  },
+  created() {
+    this.fetchProductDetails();
+  },
+  methods: {
+    async fetchProductDetails() {
+      try {
+        const { data } = await api.get(`/api/product/${this.$route.params.id}`);
+        this.product = data;
+      } catch (error) {
+        console.error('Erreur lors de la récupération des détails du produit:', error);
+      }
+    },
+    async handleRatingSubmit(value) {
+      try {
+        const response = await api.post(`/api/product/${this.$route.params.id}/ratings`, { value });
+        this.product = {
+          ...this.product,
+          ratings: [...this.product.ratings,  response.data ]
+        };
+      } catch (error) {
+        console.error('There was an error submitting the rating!', error);
+      }
+    },
+    async handleCommentSubmit(content) {
+      try {
+        const response = await api.post(`/api/product/${this.$route.params.id}/comment`, { content });
+        this.product = {
+          ...this.product,
+          comments: [...this.product.comments, response.data]
+        };
+      } catch (error) {
+        console.error('There was an error submitting the comment!', error);
+      }
+    },
+    formatDate(dateString) {
+      return new Date(dateString).toLocaleString();
+    },
+    isCurrentUser(username) {
+      return username === this.$store.state.userInfo.user.username;
+    },
+    toggleEdit(comment) {
+      comment.editing = !comment.editing;
+    },
+    updateComment(comment) {
+        api.put(`/api/comments/${comment.id}`, { content: comment.content })
+        .then(() => {
+          comment.editing = false;
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
+    deleteComment(commentId) {
+      api.delete(`/api/comments/${commentId}`)
+        .then(() => {
+          this.product.comments = this.product.comments.filter(comment => comment.id !== commentId);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
   }
-  </script>
-  
-  <style scoped>
-  .product-detail {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin: 20px auto;
-    max-width: 600px;
-  }
-  
-  .product-image {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-  }
-  
-  .product-info {
-    text-align: center;
-    margin-top: 20px;
-  }
-  
-  .product-name {
-    font-size: 1.8em;
-    margin-bottom: 10px;
-  }
-  
-  .product-description {
-    font-size: 1em;
-    margin-bottom: 10px;
-  }
-  
-  .product-price {
-    font-size: 1.4em;
-    color: #e74c3c;
-    margin-bottom: 10px;
-  }
-  
-  .product-stock,
-  .product-rating,
-  .product-discount,
-  .product-active,
-  .product-promotion {
-    font-size: 0.9em;
-    color: #555;
-  }
-  </style>
-  
+}
+</script>
+
+<style scoped>
+.card-img-top {
+  border-radius: 8px;
+}
+
+.card-body {
+  text-align: center;
+}
+
+.card-title {
+  font-size: 1.8em;
+  margin-bottom: 10px;
+}
+
+.card-text {
+  font-size: 1em;
+  margin-bottom: 10px;
+}
+
+.card-text strong {
+  font-weight: bold;
+}
+
+.list-group-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.list-group-item strong {
+  font-weight: bold;
+}
+
+.list-group-item small {
+  margin-left: 10px;
+}
+</style>
